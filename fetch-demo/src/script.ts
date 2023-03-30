@@ -1,4 +1,4 @@
-const clientId = "your-client-id"; // Replace with your client id
+const clientId = "f24945a9f45b43e0a22f60bd581ba6c4"; // Replace with your client id
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 
@@ -103,6 +103,6 @@ async function fetchRecommendations(token: string): Promise<Recommendations> {
 }
 
 function populateRecUI(recommendations: Recommendations) {
-    document.getElementById("seeds")!.innerText = recommendations.seeds[0].id
-    document.getElementById("tracks")!.innerText = recommendations.tracks[0].name
+    document.getElementById("seeds")!.innerText = ((recommendations.seeds)[0]).id;
+    document.getElementById("tracks")!.innerText = ((recommendations.tracks)[0]).name;
 }
