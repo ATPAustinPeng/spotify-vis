@@ -1,6 +1,7 @@
 import { BarChart } from "@/components/BarChart";
 import { GroupedBarChart } from "@/components/GroupedBarChart";
 import { StackedBarChart } from "@/components/StackedBarChart";
+import { Graph } from "@/components/Graph";
 import type { IData, IGroupedData } from "@/util/types";
 import Head from "next/head";
 
@@ -61,30 +62,33 @@ export default function Home() {
         </div>
       </nav>
 
-        <div className="container">
-          <h1>
-            <span>React and D3 examples </span>
-            <span role="img" aria-label="Index pointing down emoji">
-              👇
-            </span>
-          </h1>
+      <div className="grid h-screen place-items-center">
+        <section id="graph">
+          <h2>Graph</h2>
+          <Graph/>
+        </section>
+      </div>
 
-          <section>
-            <h2>Bar chart</h2>
-            <BarChart data={BAR_CHART_DATA} />
-          </section>
-
-          <section>
-            <h2>Grouped bar chart with tooltip</h2>
-            <GroupedBarChart data={GROUPED_BAR_CHART_DATA} />
-          </section>
-
-          <section>
-            <h2>Stacked bar chart</h2>
-            <StackedBarChart data={GROUPED_BAR_CHART_DATA} />
-          </section>
-
-        </div>
+      <div className="container">
+        <h1>
+          <span>React and D3 examples </span>
+          <span role="img" aria-label="Index pointing down emoji">
+            👇
+          </span>
+        </h1>
+        <section>
+          <h2>Bar chart</h2>
+          <BarChart data={BAR_CHART_DATA} />
+        </section>
+        <section>
+          <h2>Grouped bar chart with tooltip</h2>
+          <GroupedBarChart data={GROUPED_BAR_CHART_DATA} />
+        </section>
+        <section>
+          <h2>Stacked bar chart</h2>
+          <StackedBarChart data={GROUPED_BAR_CHART_DATA} />
+        </section>
+      </div>
       </main>
     </>
   )
