@@ -169,7 +169,7 @@ circle {
 }
 
 text {
-  fill: #000;
+  fill: #fff;
   font: 10px sans-serif;
   pointer-events: none;
 }
