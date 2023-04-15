@@ -164,7 +164,6 @@ path.link {
 circle {
   fill: #ccc;
   stroke: #fff;
-  /* stroke: black; */
   stroke-width: 1.5px;
 }
 
