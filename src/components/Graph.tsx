@@ -1,28 +1,31 @@
 import * as d3 from "d3";
 import { useRef } from "react";
 
-export function Graph() {
-  const svgRef = useRef(null),
-        width = 1200,
-        height = 700;
+export function Graph(props: any) {
+  const svgRef = useRef(null);
+        // @ts-ignore
+  let width = props.width,
+        // @ts-ignore
+      height = props.height;
   
   d3.csv("songs_with_value.csv", function(d) {
+
     return {
       source: d.source,
       target: d.target,
-      value: Number(d.value)
+      value: Number(d.value),
+      artist: d.artist,
     }
   }).then(function(data) {
   
     var links = data;
   
-    // var nodes = {};
     const nodes: Record<string, any> = {}
-  
+    
     // compute the distinct nodes from the links.
     links.forEach(function(link) {
-        link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
-        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
+      link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
+      link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
     });
   
     var force = d3.forceSimulation()
@@ -34,10 +37,6 @@ export function Graph() {
         .force("charge", d3.forceManyBody().strength(-250))
         .alphaTarget(1)
         .on("tick", tick);
-  
-    // var svg = d3.select("#Target")
-    //     .attr("width", width)
-    //     .attr("height", height);
 
     const svg = d3.select(svgRef.current);
   
@@ -46,12 +45,18 @@ export function Graph() {
         .selectAll("path")
         .data(links)
         .enter()
-        .append("path")
-        .attr("class", function(d: any) { return "link " + d.type; })
+        .append("line")
+        .attr("class", function(d: any) { return "link " + d.artist; })
         .style("stroke", function(d) {if (d.value < 1) {return 'grey';} else {return 'green';}})
         .style("stroke-width", function(d) {if (d.value < 1) {return '3px';}})
         .style("stroke-dasharray", function(d) {if (d.value > 0) {return '3 3';}});
   
+
+    let tooltip = d3.select("#tooltip")
+        .style("visibility", "visible")
+        .style("border-width", "1px")
+        .style("border-radius", "10px")
+        .style("padding", "10px");
     // define the nodes
     var call: any = d3.drag()
     .on("start", dragstarted)
@@ -61,10 +66,27 @@ export function Graph() {
         .data(force.nodes())
         .enter().append("g")
         .attr("class", "node")
+        .classed("fixed", d => d.fx !== undefined)
         .call(call)
-            .on("dblclick", drag_doubleclick); //d3.1
+            .on("dblclick", drag_doubleclick)
+            .on("mouseover", mouseover);
   
-  
+    function mouseover(d: any) {
+      let artist;
+      for (const item of data) {
+        if (item["source"]["name"] == d.name || item["target"]["name"] == d.name) {
+          artist = item["artist"];
+        }
+      }
+      let display = `
+        Name: ${d.name}<br>
+        Artist: ${artist}<br>
+        Reccomended: ${d.value ? "Yes!" : "Nope!"}<br>
+      `
+      tooltip
+      .html(display)
+    }
+
     // c2) The degree of each node should be represented by varying colors
     var min_degree=d3.min(force.nodes(), function(d: any) {return d.weight = path.filter(function(l: any) {return l.source.index == d.index || l.target.index == d.index}).size();});
     var max_degree=d3.max(force.nodes(), function(d: any) { return d.weight = path.filter(function(l: any) {return l.source.index == d.index || l.target.index == d.index}).size();});
@@ -95,17 +117,15 @@ export function Graph() {
   
     // add the curvy lines
     function tick() {
-        path.attr("d", function(d: any) {
-            var dx = d.target.x - d.source.x,
-                dy = d.target.y - d.source.y,
-                dr = Math.sqrt(dx * dx + dy * dy);
-            return "M" +
-                d.source.x + "," +
-                d.source.y + "A" +
-                dr + "," + dr + " 0 0,1 " +
-                d.target.x + "," +
-                d.target.y;
-        });
+        path
+        // @ts-ignore
+        .attr("x1", d => d.source.x)
+        // @ts-ignore
+        .attr("y1", d => d.source.y)
+        // @ts-ignore
+        .attr("x2", d => d.target.x)
+        // @ts-ignore
+        .attr("y2", d => d.target.y);
   
         node.attr("transform", function(d) {
             return "translate(" + validate_width(d.x)  + "," + validate_height(d.y) + ")"; 
@@ -162,11 +182,25 @@ export function Graph() {
       if (x > width) x = width - 10;
       return x;
     }
-    
+
+    // Define responsive behavior
+    function resize() {
+      width = parseInt(d3.select("#graph").style("width"));
+      height = parseInt(d3.select("#graph").style("height"));
+      svg.attr("width", width).attr("height", height); 
+    };
+
+    // Call the resize function whenever a resize event occurs
+    d3.select(window).on('resize', resize);
+
+    // Call the resize function
+    resize();
+
+
   }).catch(function(error) {
     console.log(error);
   });
   return (
-    <svg ref={svgRef} width={width} height={height} className="border-solid border-2 border-sky-500"/>
+    <svg ref={svgRef} width={width} height={height} className="border-solid border-1 border-sky-500 col-span-3"/>
   );
 }
