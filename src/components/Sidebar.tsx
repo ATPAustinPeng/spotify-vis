@@ -1,17 +1,26 @@
 import React, { useState } from "react";
 
 export default function Sidebar(props: any) {
+    let text = useState("asda");
 
     const handleOnChange = (e) => {
         props.file[1](e.target.files[0]);
         fetch('./', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/csv',
-            'Content-Type': 'application/csv'
-        },
-        body: e.target.files[0]
-    })
+            method: 'POST',
+            headers: {
+                'Accept': 'application/csv',
+                'Content-Type': 'application/csv'
+            },
+            body: e.target.files[0]
+        })
+    };
+
+    const handleOnClick = (e) => {
+        text[1]("example\nexample\nexample\nexample\nexample\nexample\n");
+    };
+
+    const generateEdgeList = () => {
+        
     };
 
     return (
@@ -33,8 +42,13 @@ export default function Sidebar(props: any) {
                                     <input id="file_input" type={"file"} accept={".csv"} onChange={handleOnChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"/>
                                 </li>
                                 <li className="rounded-sm">
-                                    <div className="border-2 border-gray-700 rounded-lg px-3 py-2 text-gray-400 cursor-pointer hover:bg-gray-700 hover:text-gray-200 w-full text-center">
+                                    <div className="border-2 border-gray-700 rounded-lg px-3 py-2 text-gray-400 cursor-pointer hover:bg-gray-700 hover:text-gray-200 w-full text-center" onClick={handleOnClick}>
                                         Generate (TODO)
+                                    </div>
+                                </li>
+                                <li className="rounded-sm">
+                                    <div id="recs" className="border-2 border-gray-700 rounded-lg px-3 py-2 text-gray-400 w-full text-center">
+                                        {text}
                                     </div>
                                 </li>
                             </ul>
