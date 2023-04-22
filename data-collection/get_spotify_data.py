@@ -14,7 +14,9 @@ import time
 def save_song_id_and_artist_id(sp, ids_save_path, start_from=0):
     # get data
     data = None
-    with open("../data/info_for_spotify_api.csv", "r") as f:
+    # with open("../data/info_for_spotify_api.csv", "r") as f:
+    #     data = f.read().splitlines()[1 + start_from:] # skip line 1 (header)
+    with open("../data/lastfm_train_test_comb-1.csv", "r") as f:
         data = f.read().splitlines()[1 + start_from:] # skip line 1 (header)
 
     # make sure data exists
@@ -38,7 +40,8 @@ def save_song_id_and_artist_id(sp, ids_save_path, start_from=0):
         
         for dat in tqdm(data):
             written_to_csv = False
-            song_name, artist = tuple(dat.split(","))
+            # song_name, artist = tuple(dat.split(","))
+            song_name, artist = tuple(dat.split(",")[1:3])
             sn, sid, an, aid = song_name, None, artist, None
 
             # iterate through all pages of search results
@@ -49,7 +52,7 @@ def save_song_id_and_artist_id(sp, ids_save_path, start_from=0):
 
                 try:
                     search_results = sp.search(q=q, limit=50, offset=offset, type='track')
-                    time.sleep(0.33) # time buffer to avoid rate limit
+                    time.sleep(0.30) # time buffer to avoid rate limit
                 except spotipy.SpotifyException as e:
                     print("ERROR: ", e)
                     print("EXCEPTION OCCURRED: writing %s, %s, %s, %s" % (sn, sid, an, aid))
@@ -216,15 +219,18 @@ if __name__ == "__main__":
     
     datapath = "../data/"
 
-    # NOTE: ONLY CALL ONCE TO GET IDs
-    # print("collecting song and artist ids...")
-    # save_song_id_and_artist_id(client_id, client_secret, datapath + "spotify_api_ids.csv", 0) 
-    # count_lines_in_file(datapath + "spotify_api_ids2.csv")
+#     # NOTE: ONLY CALL ONCE TO GET IDs
+#     # print("collecting song and artist ids...")
+#     # save_song_id_and_artist_id(client_id, client_secret, datapath + "spotify_api_ids.csv", 0) 
+#     # count_lines_in_file(datapath + "spotify_api_ids2.csv")
+    save_song_id_and_artist_id(sp, datapath + "lastfm_train_test_comb-1_spotify_ids.csv", 0)
 
-    print("saving song feature info...")
-    filename = "spotify_api_song_features_data_unclean.csv"
-    save_song_features(sp, datapath + "spotify_api_ids.csv", datapath + filename)
-    count_lines_in_file(datapath + filename)
+    # print("saving song feature info...")
+    # filename = "spotify_api_song_features_data_unclean.csv"
+    # save_song_features(sp, datapath + "spotify_api_ids.csv", datapath + filename)
+    # count_lines_in_file(datapath + filename)
+    filename = "lastfm_train_test_comb-1_spotify_features_data_unclean.csv"
+    save_song_features(sp, datapath + "lastfm_train_test_comb-1_spotify_ids.csv", datapath + filename)
 
     # TODO: NOT USING FOR NOW... too much detailed data I don't understand
     # print("saving song analysis info...")
