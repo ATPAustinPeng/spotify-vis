@@ -11,12 +11,13 @@ import time
 # TODO: use spotify "get_several_tracks" to scrape song popular/song_genre and artist followers/genre association
 # CURRENTLY ONLY USING SPOTIFY API TO GET MORE METADATA FOR A GIVEN SONG
 # TODO: USE SPOTIFY API TO GET MORE SONGS (that are not in MSD subset/MSD full)
-def save_song_id_and_artist_id(sp, ids_save_path, start_from=0):
+def save_song_id_and_artist_id(sp, filepath, ids_save_path, start_from=0):
     # get data
     data = None
     # with open("../data/info_for_spotify_api.csv", "r") as f:
     #     data = f.read().splitlines()[1 + start_from:] # skip line 1 (header)
-    with open("../data/lastfm_train_test_comb-1.csv", "r") as f:
+    # with open("../data/lastfm_train_test_comb-1.csv", "r") as f:
+    with open(filepath, "r") as f:
         data = f.read().splitlines()[1 + start_from:] # skip line 1 (header)
 
     # make sure data exists
@@ -69,7 +70,7 @@ def save_song_id_and_artist_id(sp, ids_save_path, start_from=0):
 
                     if result["name"] == song_name and result["artists"][0]["name"] == artist:
                         sn, sid, an, aid = song_name, result["id"], artist, result["artists"][0]["id"]
-                        print("FOUND MATCHING RESULT: writing %s, %s, %s, %s" % (sn, sid, an, aid))
+                        # print("FOUND MATCHING RESULT: writing %s, %s, %s, %s" % (sn, sid, an, aid))
                         found += 1
                         writer.writerow([sn, sid, an, aid])
 
@@ -82,7 +83,7 @@ def save_song_id_and_artist_id(sp, ids_save_path, start_from=0):
                     more_entries_to_search = False
 
                 if more_entries_to_search == False and written_to_csv == False:
-                    print("DIDN'T FIND MATCH & DIDN'T WRITE writing %s, %s, %s, %s" % (sn, sid, an, aid))
+                    # print("DIDN'T FIND MATCH & DIDN'T WRITE writing %s, %s, %s, %s" % (sn, sid, an, aid))
                     didnt_find += 1
                     writer.writerow([sn, sid, an, aid])
                     written_to_csv = True
@@ -223,14 +224,15 @@ if __name__ == "__main__":
 #     # print("collecting song and artist ids...")
 #     # save_song_id_and_artist_id(client_id, client_secret, datapath + "spotify_api_ids.csv", 0) 
 #     # count_lines_in_file(datapath + "spotify_api_ids2.csv")
-    save_song_id_and_artist_id(sp, datapath + "lastfm_train_test_comb-1_spotify_ids.csv", 0)
+    split_num = 2
+    save_song_id_and_artist_id(sp, datapath + f"lastfm_train_test_comb-{split_num}.csv", datapath + f"lastfm_train_test_comb-{split_num}_spotify_ids.csv", 0)
 
     # print("saving song feature info...")
     # filename = "spotify_api_song_features_data_unclean.csv"
     # save_song_features(sp, datapath + "spotify_api_ids.csv", datapath + filename)
     # count_lines_in_file(datapath + filename)
-    filename = "lastfm_train_test_comb-1_spotify_features_data_unclean.csv"
-    save_song_features(sp, datapath + "lastfm_train_test_comb-1_spotify_ids.csv", datapath + filename)
+    filename = f"lastfm_train_test_comb-{split_num}_spotify_features_data_unclean.csv"
+    save_song_features(sp, datapath + f"lastfm_train_test_comb-{split_num}_spotify_ids.csv", datapath + filename)
 
     # TODO: NOT USING FOR NOW... too much detailed data I don't understand
     # print("saving song analysis info...")
