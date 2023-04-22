@@ -48,7 +48,7 @@ export default function Sidebar(props: any) {
                                 </li>
                                 <li className="rounded-sm">
                                     <div id="recs" className="border-2 border-gray-700 rounded-lg px-3 py-2 text-gray-400 w-full text-center">
-                                        {text}
+                                        {/* {text} */}
                                     </div>
                                 </li>
                             </ul>
