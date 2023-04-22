@@ -9,16 +9,23 @@ export function Graph(props: any) {
       height = props.height;
   
   d3.csv("songs_with_value.csv", function(d) {
-
     return {
       source: d.source,
       target: d.target,
       value: Number(d.value),
-      artist: d.artist,
+      s_artist: d.s_artist,
+      t_artist: d.t_artist,
+      s_tags: d.s_tags,
+      t_tags: d.t_tags,
     }
   }).then(function(data) {
   
     var links = data;
+    let songSet = new Set();
+    for (const link of data) {
+      songSet.add(link.source);
+      songSet.add(link.target);
+    }
   
     const nodes: Record<string, any> = {}
     
@@ -41,15 +48,22 @@ export function Graph(props: any) {
     const svg = d3.select(svgRef.current);
   
     // add the links
+
+    var range1: any = [d3.rgb("#75A2BF"),d3.rgb("#003366")];
+    var range2: any = d3.interpolateHcl;
+    var path_colors = d3.scaleLinear()
+        .domain([0,1])
+        .range(range1)
+        .interpolate(range2);
+
     var path = svg.append("g")
         .selectAll("path")
         .data(links)
         .enter()
         .append("line")
         .attr("class", function(d: any) { return "link " + d.artist; })
-        .style("stroke", function(d) {if (d.value < 1) {return 'grey';} else {return 'green';}})
-        .style("stroke-width", function(d) {if (d.value < 1) {return '3px';}})
-        .style("stroke-dasharray", function(d) {if (d.value > 0) {return '3 3';}});
+        .style("stroke", function(d: any) {return path_colors(d.value)})
+        .style("stroke-width", 3);
   
 
     let tooltip = d3.select("#tooltip")
@@ -73,15 +87,31 @@ export function Graph(props: any) {
   
     function mouseover(d: any) {
       let artist;
+      let tags = "";
+      let sim_score;
       for (const item of data) {
-        if (item["source"]["name"] == d.name || item["target"]["name"] == d.name) {
-          artist = item["artist"];
+        if (item["source"]["name"] == d.name) {
+          artist = item["s_artist"];
+          let tags_list = JSON.parse(item["s_tags"].replace(/'/g, '"'));
+          tags = tags_list.map((x) => {
+            return x[0];
+          }).toString();
+          sim_score = item["value"];
+        }
+        if (item["target"]["name"] == d.name) {
+          artist = item["t_artist"];
+          let tags_list = JSON.parse(item["s_tags"].replace(/'/g, '"'));
+          tags = tags_list.map((x) => {
+            return x[0];
+          }).toString();
+          sim_score = item["value"];
         }
       }
       let display = `
         Name: ${d.name}<br>
         Artist: ${artist}<br>
-        Reccomended: ${d.value ? "Yes!" : "Nope!"}<br>
+        Tags: ${tags}<br>
+        Similarity Score (1-10): ${sim_score * 10}<br>
       `
       tooltip
       .html(display)
@@ -90,7 +120,7 @@ export function Graph(props: any) {
     // c2) The degree of each node should be represented by varying colors
     var min_degree=d3.min(force.nodes(), function(d: any) {return d.weight = path.filter(function(l: any) {return l.source.index == d.index || l.target.index == d.index}).size();});
     var max_degree=d3.max(force.nodes(), function(d: any) { return d.weight = path.filter(function(l: any) {return l.source.index == d.index || l.target.index == d.index}).size();});
-    var rang: any = [d3.rgb("#fde0dd"),d3.rgb("#c51b8a")];
+    var rang: any = [d3.rgb("#00000f"),d3.rgb("#fffff0")];
     var rang2: any = d3.interpolateHcl;
     var colors = d3.scaleLinear()
         .domain([min_degree,max_degree])
@@ -99,11 +129,12 @@ export function Graph(props: any) {
   
     // add the nodes
     var fill: any = d3.rgb("#bfd3e6");
+    var gery_fill: any = d3.rgb("#808080");
     node.append("circle")
         .attr("id", function(d: any){return (d.name.replace(/\s+/g,'').toLowerCase());})
         .attr("r", function(d: any) { d.weight = path.filter(function(l: any) {return l.source.index == d.index || l.target.index == d.index}).size(); var minRadius =3;
        return minRadius + (d.weight * 2);}) //c1) 
-      .style("fill", function(d) { return colors(d.index); })
+      .style("fill", gery_fill)
       .on("dblclick", function(d) {
         d3.select(this).style("fill", fill);}); //d3.2
   
