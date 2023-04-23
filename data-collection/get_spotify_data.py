@@ -225,7 +225,7 @@ if __name__ == "__main__":
 #     # save_song_id_and_artist_id(client_id, client_secret, datapath + "spotify_api_ids.csv", 0) 
 #     # count_lines_in_file(datapath + "spotify_api_ids2.csv")
     split_num = 2
-    save_song_id_and_artist_id(sp, datapath + f"lastfm_train_test_comb-{split_num}.csv", datapath + f"lastfm_train_test_comb-{split_num}_spotify_ids.csv", 0)
+    # save_song_id_and_artist_id(sp, datapath + f"lastfm_train_test_comb-{split_num}.csv", datapath + f"lastfm_train_test_comb-{split_num}_spotify_ids.csv", 0)
 
     # print("saving song feature info...")
     # filename = "spotify_api_song_features_data_unclean.csv"
