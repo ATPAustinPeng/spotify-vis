@@ -2,6 +2,7 @@ import pandas as pd
 import json
 import numpy as np
 import csv
+import random
 
 class RecommendationGraph:
     
@@ -49,7 +50,8 @@ class RecommendationGraph:
         else:
             self.in_edges[target].append(edge)
             
-    def random_walk_similarity(self, current_node=random.choice(list(self.nodes.keys())), num_steps=1, num_recommendations=5):
+    def random_walk_similarity(self, current_node=None, num_steps=1, num_recommendations=5):
+        current_node = random.choice(list(self.nodes.keys()))
         
         edges_traversed = []
         tids_traversed = []
@@ -113,7 +115,7 @@ class Node:
         self.artist = song_artist
         self.tags = song_tags
 
-def recommend(num_steps=1, num_recommendations=5) {
+def recommend(num_steps=1, num_recommendations=5):
 
     recommendation_graph = RecommendationGraph()
     song_info = pd.read_csv("../public/subgraph.csv")
@@ -203,7 +205,6 @@ def recommend(num_steps=1, num_recommendations=5) {
             break
 
     return recommendation_graph.random_walk_similarity(random.choice(list(d.values())), num_steps, num_recommendations)
-}
             
 #print(len(recommendation_graph.nodes))
 #print(len(recommendation_graph.edges))
@@ -239,3 +240,5 @@ def recommend(num_steps=1, num_recommendations=5) {
     #writer.writerow(row)
     #f.flush()
 #f.close()
+
+print(recommend())

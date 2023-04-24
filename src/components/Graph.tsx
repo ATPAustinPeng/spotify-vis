@@ -113,15 +113,16 @@ export function Graph(props: any) {
         Name: ${d.name}<br>
         Artist: ${artist}<br>
         Tags: ${tags}<br>
-        Similarity Score (1-10): ${sim_score * 10}<br>
+        Similarity Score: ${sim_score}<br>
       ` : `This is an artist node! Part of what makes this a hyper graph.`
       tooltip
       .html(display)
     }
 
     // c2) The degree of each node should be represented by varying colors
-    var min_degree=d3.min(force.nodes(), function(d: any) {return d.weight = path.filter(function(l: any) {return l.source.index == d.index || l.target.index == d.index}).size();});
-    var max_degree=d3.max(force.nodes(), function(d: any) { return d.weight = path.filter(function(l: any) {return l.source.index == d.index || l.target.index == d.index}).size();});
+    var min_degree=d3.min(data, function(d: any) {return d["value"]});
+    var max_degree=d3.max(data, function(d: any) {return d["value"]});
+    // var max_degree=d3.max(force.nodes(), function(d: any) { return d.weight = path.filter(function(l: any) {return l.source.index == d.index || l.target.index == d.index}).size();});
     var rang: any = [d3.rgb("#00000f"),d3.rgb("#fffff0")];
     var rang2: any = d3.interpolateHcl;
     var colors = d3.scaleLinear()
