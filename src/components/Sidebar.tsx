@@ -12,9 +12,8 @@ export default function Sidebar(props: any) {
     };
 
     return (
-            <div id="sidebar" className="flex flex-col h-screen p-3 bg-gray-800 shadow col-span-1 grid grid-rows-2">
-                <div className="row-span-1">
-                    <div className="space-y-3">
+            <div id="sidebar" className="flex flex-col h-screen p-3 bg-gray-800 shadow col-span-1 grid grid-rows-2 space-y-1">
+                <div className="row-span-1 space-y-2 flex flex-col">
                         <div className="flex items-center flex-shrink-0 text-white mr-6 text-xl font-bold">
                             <svg className="fill-current h-8 w-8 mr-2" width="54" height="54" viewBox="0 0 24 24" fill="#26A69A" xmlns="http://www.w3.org/2000/svg">
                                 <path fillRule="evenodd" clipRule="evenodd" d="M6 4.5C5.17157 4.5 4.5 5.17157 4.5 6C4.5 6.82843 5.17157 7.5 6 7.5C6.82843 7.5 7.5 6.82843 7.5 6C7.5 5.17157 6.82843 4.5 6 4.5ZM3.5 6C3.5 4.61929 4.61929 3.5 6 3.5C7.38071 3.5 8.5 4.61929 8.5 6C8.5 7.38071 7.38071 8.5 6 8.5C4.61929 8.5 3.5 7.38071 3.5 6Z" fill="teal-200"/>
@@ -23,16 +22,12 @@ export default function Sidebar(props: any) {
                             </svg>
                             <span className="font-semibold text-xl tracking-tight">Dashboard</span>
                         </div>
-                        <div className=" flex-1">
-                            <ul className="pt-2 pb-4 space-y-1 text-md">
-                                <li className="rounded-sm">
-                                    <div className="border-2 border-gray-700 rounded-lg px-3 py-2 text-gray-400 cursor-pointer hover:bg-gray-700 hover:text-gray-200 w-full text-center" onClick={handleOnClick}>
-                                        Generate
-                                    </div>
-                                </li>
-                            </ul>
+                        <div className="border border-white-200 rounded-lg px-3 py-2  cursor-pointer hover:bg-gray-700 hover:text-gray-200 w-full text-center" onClick={handleOnClick}>
+                            Click to generate
                         </div>
-                    </div>
+                        <div className="border border-white-200 rounded-lg px-3 py-2 w-full h-full text-center flex-1" onClick={handleOnClick}>
+                            Reccommendations will show here!
+                        </div>
                 </div>
                 <div id="tooltip" className="row-span-1">
                     <span>Hover one of the nodes!</span>
