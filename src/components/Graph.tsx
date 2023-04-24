@@ -91,7 +91,7 @@ export function Graph(props: any) {
       let tags = "";
       let sim_score;
       for (const item of data) {
-        if (item["source"]["name"] == d.name) {
+        if (item.attribute == "song" && item["source"]["name"] == d.name) {
           artist = item["s_artist"];
           let tags_list = JSON.parse(item["s_tags"].replace(/'/g, '"'));
           tags = tags_list.map((x) => {
@@ -99,7 +99,7 @@ export function Graph(props: any) {
           }).toString();
           sim_score = item["value"];
         }
-        if (item["target"]["name"] == d.name) {
+        if (item.attribute == "song" && item["target"]["name"] == d.name) {
           artist = item["t_artist"];
           let tags_list = JSON.parse(item["s_tags"].replace(/'/g, '"'));
           tags = tags_list.map((x) => {
@@ -108,12 +108,12 @@ export function Graph(props: any) {
           sim_score = item["value"];
         }
       }
-      let display = `
+      let display = artist ? `
         Name: ${d.name}<br>
         Artist: ${artist}<br>
         Tags: ${tags}<br>
         Similarity Score (1-10): ${sim_score * 10}<br>
-      `
+      ` : `This is an artist node! Part of what makes this a hyper graph.`
       tooltip
       .html(display)
     }
@@ -130,12 +130,22 @@ export function Graph(props: any) {
   
     // add the nodes
     var fill: any = d3.rgb("#bfd3e6");
+
     var gery_fill: any = d3.rgb("#808080");
+    var red_fill: any = d3.rgb("#c43727");
     node.append("circle")
         .attr("id", function(d: any){return (d.name.replace(/\s+/g,'').toLowerCase());})
         .attr("r", function(d: any) { d.weight = path.filter(function(l: any) {return l.source.index == d.index || l.target.index == d.index}).size(); var minRadius =3;
        return minRadius + (d.weight * 2);}) //c1) 
-      .style("fill", gery_fill)
+      .style("fill", (d: any) => {
+        for (const item of links) {
+          console.log(item.source, d.name, item.s_artist)
+          if (item.source["name"] == d.name && item.s_artist == "") {
+            return red_fill;
+          }
+        }
+        return gery_fill;
+      })
       .on("dblclick", function(d) {
         d3.select(this).style("fill", fill);}); //d3.2
   
@@ -194,7 +204,6 @@ export function Graph(props: any) {
             d.fy = null;
         }
         // @ts-ignore
-        d3.select(this).select("circle").style("fill", "grey");
     };
   
     function drag_doubleclick(d: any) {
