@@ -2,6 +2,7 @@ import pandas as pd
 import json
 import numpy as np
 import csv
+import random
 
 class RecommendationGraph:
     
@@ -9,6 +10,7 @@ class RecommendationGraph:
     
     def __init__(self):
         self.nodes = {}
+        self.song_nodes = {} #For metrics only
         self.edges = []
         self.in_edges = {}
         self.out_edges = {}
@@ -48,6 +50,9 @@ class RecommendationGraph:
             self.in_edges[target].append(edge)
         else:
             self.in_edges[target].append(edge)
+            
+        if self.nodes[source].attribute == "song" and self.nodes[target].attribute == "song":
+            self.song_nodes[source] = self.nodes[source]
             
     def random_walk_similarity(self, current_node, num_steps, num_recommendations):
         
@@ -96,7 +101,7 @@ class RecommendationGraph:
                 recommendations[cnt] = sorted_edges[idx][0]
                 scores[cnt] = sorted_edges[idx][1]
             idx += 1
-        #for k, v in recommendations.items():
+        for k, v in recommendations.items():
             #print(str(k) + " " + str(v) + " " + str(scores[int(k)]))
         #print(recommendations)
         #print(edges_traversed)
@@ -106,7 +111,7 @@ class RecommendationGraph:
         
 class Node:
     
-    def __init__(self, attribute, song_name, song_id, song_artist, song_tags):
+    def __init__(self, attribute, song_id, song_name, song_artist, song_tags):
         self.attribute = attribute
         self.name = song_name
         self.song_id = song_id
@@ -116,7 +121,7 @@ class Node:
 recommendation_graph = RecommendationGraph()
 song_info = pd.read_csv("lastfm_train_test_comb.csv")
 
-numNodes = 100
+numNodes = 1000
 artist_num_songs_threshold = 3
 
 for index, row in song_info.iterrows():
@@ -141,7 +146,7 @@ for index, row in song_info.iterrows():
     else:
         recommendation_graph.artists[source_song_artist].append(source_song_id)
         if len(recommendation_graph.artists[source_song_artist]) == artist_num_songs_threshold:
-            tmp_node = Node("artist", source_song_artist, "", "", "")
+            tmp_node = Node("artist", "N/A", source_song_artist, "N/A", "N/A")
             recommendation_graph.addNode(source_song_artist, tmp_node)
             for tid in recommendation_graph.artists[source_song_artist]:
                 recommendation_graph.addEdge(source_song_id, source_song_artist, 1.0)
@@ -188,7 +193,7 @@ for index, row in song_info.iterrows():
         elif target_artist in recommendation_graph.artists:
             recommendation_graph.artists[target_artist].append(target_id)
             if len(recommendation_graph.artists[target_artist]) == artist_num_songs_threshold:
-                tmp_node = Node("artist", target_artist, "", "", "")
+                tmp_node = Node("artist", "N/A", source_song_artist, "N/A", "N/A")
                 recommendation_graph.addNode(target_artist, tmp_node)
                 for tid in recommendation_graph.artists[target_artist]:
                     recommendation_graph.addEdge(tid, target_artist, 1.0)
@@ -214,23 +219,74 @@ for index, row in song_info.iterrows():
     #else:
         #print(str(0))
     #print("-----------------------------------------")
-#recommendation_graph.random_walk_similarity('TRAAAED128E0783FAB', 3, 5)
+recommendation_graph.random_walk_similarity('TRAAAAK128F9318786', 3, 5)
 
-#header = ['source', 'attribute', 's_artist', 'target', 't_artist', 'value', 's_tags', 't_tags']
+header = ['source', 's_attribute', 's_id', 's_artist', 'target', 't_attribute', 
+          't_id', 't_artist', 'value', 's_tags', 't_tags']
 
-#f = open('subgraph.csv', 'w', encoding = 'utf-8', newline = '')
-#writer = csv.writer(f)
-#writer.writerow(header)
-#for edge in recommendation_graph.edges:
-    #source = recommendation_graph.nodes[edge[0]].name
-    #attribute = recommendation_graph.nodes[edge[0]].attribute
-    #s_artist = recommendation_graph.nodes[edge[0]].artist
-    #target = recommendation_graph.nodes[edge[1]].name
-    #t_artist = recommendation_graph.nodes[edge[1]].artist
-    #value = edge[2]
-    #s_tags = recommendation_graph.nodes[edge[0]].tags
-    #t_tags = recommendation_graph.nodes[edge[1]].tags
-    #row = [source, attribute, s_artist, target, t_artist, value, s_tags, t_tags]
-    #writer.writerow(row)
-    #f.flush()
-#f.close()
+f = open('subgraph.csv', 'w', encoding = 'utf-8', newline = '')
+writer = csv.writer(f)
+writer.writerow(header)
+for edge in recommendation_graph.edges:
+    source = recommendation_graph.nodes[edge[0]].name
+    s_attribute = recommendation_graph.nodes[edge[0]].attribute
+    s_id = recommendation_graph.nodes[edge[0]].song_id
+    s_artist = recommendation_graph.nodes[edge[0]].artist
+    target = recommendation_graph.nodes[edge[1]].name
+    t_attribute = recommendation_graph.nodes[edge[1]].attribute
+    t_id = recommendation_graph.nodes[edge[1]].song_id
+    t_artist = recommendation_graph.nodes[edge[1]].artist
+    value = edge[2]
+    s_tags = recommendation_graph.nodes[edge[0]].tags
+    t_tags = recommendation_graph.nodes[edge[1]].tags
+    row = [source, s_attribute, s_id, s_artist, target, t_attribute, t_id, t_artist, value, s_tags, t_tags]
+    writer.writerow(row)
+    f.flush()
+f.close()
+
+#print("--------------------------------------------")
+
+#Metrics
+
+randomly_chosen_songs = list(np.random.choice(list(recommendation_graph.song_nodes.keys()), 5, 
+                                         p =  [1 / len(list(recommendation_graph.song_nodes.keys())) 
+                                               for _ in recommendation_graph.song_nodes.keys()]))
+
+init_len = len(randomly_chosen_songs)
+
+for i in range(init_len):
+    tmp = [edge for edge in recommendation_graph.out_edges[randomly_chosen_songs[i]] if float(edge[2]) > 0.001]
+    added_song = random.choice(tmp)[1]
+    randomly_chosen_songs.append(added_song)
+        
+        
+randomly_chosen_songs_set = set()
+for song in randomly_chosen_songs:
+    randomly_chosen_songs_set.add(song)
+
+#print(randomly_chosen_songs)
+
+input_songs = list(np.random.choice(list(randomly_chosen_songs), 5, p = [0.1 for _ in randomly_chosen_songs]))
+
+#print("--------------------------------------------------------")
+#print(input_songs)
+
+sum_of_avg_ratios = 0.0
+for j in range(100):
+    sum_of_ratios = 0.0
+    for song in input_songs:
+        #print("song: " + str(song))
+        #print("------------------------------------------")
+        recommendations, edges = recommendation_graph.random_walk_similarity(song, 2, 5)
+        tp = 0
+        total = len(list(recommendations.keys()))
+        for recommendation in recommendations:
+            if recommendations[recommendation] in randomly_chosen_songs_set and recommendations[recommendation] not in input_songs:
+                tp += 1
+                randomly_chosen_songs_set.remove(recommendations[recommendation])
+        ratio = float(tp) / total
+        #print(ratio)
+        sum_of_ratios += ratio
+    average_ratio = sum_of_ratios / len(input_songs)
+    sum_of_avg_ratios += average_ratio
+#print(sum_of_avg_ratios / 100.0)
