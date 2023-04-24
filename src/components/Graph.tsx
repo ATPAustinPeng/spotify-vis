@@ -8,7 +8,7 @@ export function Graph(props: any) {
         // @ts-ignore
       height = props.height;
   
-  d3.csv("songs_with_value.csv", function(d) {
+  d3.csv("subgraph.csv", function(d) {
     return {
       source: d.source,
       target: d.target,
@@ -17,6 +17,7 @@ export function Graph(props: any) {
       t_artist: d.t_artist,
       s_tags: d.s_tags,
       t_tags: d.t_tags,
+      attribute: d.attribute
     }
   }).then(function(data) {
   
@@ -37,7 +38,7 @@ export function Graph(props: any) {
   
     var force = d3.forceSimulation()
         .nodes(d3.values(nodes))
-        .force("link", d3.forceLink(links).distance(100))
+        .force("link", d3.forceLink(links).distance(150))
         .force('center', d3.forceCenter(width / 2, height / 2))
         .force("x", d3.forceX())
         .force("y", d3.forceY())
@@ -160,6 +161,13 @@ export function Graph(props: any) {
   
         node.attr("transform", function(d) {
             return "translate(" + validate_width(d.x)  + "," + validate_height(d.y) + ")"; 
+        });
+
+        node.each((d: any) => {
+          if (d.weight > 20) {
+            d.fx = validate_width(d.x);
+            d.fy = validate_height(d.y);
+          }
         });
     };
   

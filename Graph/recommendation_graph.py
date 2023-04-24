@@ -49,7 +49,7 @@ class RecommendationGraph:
         else:
             self.in_edges[target].append(edge)
             
-    def random_walk_similarity(self, current_node, num_steps, num_recommendations):
+    def random_walk_similarity(self, current_node=random.choice(list(self.nodes.keys())), num_steps=1, num_recommendations=5):
         
         edges_traversed = []
         tids_traversed = []
@@ -113,92 +113,97 @@ class Node:
         self.artist = song_artist
         self.tags = song_tags
 
-recommendation_graph = RecommendationGraph()
-song_info = pd.read_csv("lastfm_train_test_comb.csv")
+def recommend(num_steps=1, num_recommendations=5) {
 
-numNodes = 100
-artist_num_songs_threshold = 3
+    recommendation_graph = RecommendationGraph()
+    song_info = pd.read_csv("../public/subgraph.csv")
 
-for index, row in song_info.iterrows():
-    #print(index)
-    source_song_id = str(row['track_id'].strip())
-    source_song_name = str(row['title'])
-    source_song_artist = str(row['artist'])
-    source_song_tags = row['tags']
-    
-    #print(source_song_id)
-    #print(source_song_name)
-    #print(source_song_artist)
-    #print(source_song_tags)
-    
-    if source_song_id not in recommendation_graph.nodes and len(row['similars']) > 0:
-        tmp_node = Node("song", source_song_id, source_song_name, source_song_artist, source_song_tags)
-        recommendation_graph.addNode(source_song_id, tmp_node)
-    
-    if source_song_artist not in recommendation_graph.artists:
-        recommendation_graph.artists[source_song_artist] = []
-        recommendation_graph.artists[source_song_artist].append(source_song_id)
-    else:
-        recommendation_graph.artists[source_song_artist].append(source_song_id)
-        if len(recommendation_graph.artists[source_song_artist]) == artist_num_songs_threshold:
-            tmp_node = Node("artist", source_song_artist, "", "", "")
-            recommendation_graph.addNode(source_song_artist, tmp_node)
-            for tid in recommendation_graph.artists[source_song_artist]:
+    numNodes = 100
+    artist_num_songs_threshold = 3
+
+    for index, row in song_info.iterrows():
+        #print(index)
+        source_song_id = str(row['track_id'].strip())
+        source_song_name = str(row['title'])
+        source_song_artist = str(row['artist'])
+        source_song_tags = row['tags']
+        
+        #print(source_song_id)
+        #print(source_song_name)
+        #print(source_song_artist)
+        #print(source_song_tags)
+        
+        if source_song_id not in recommendation_graph.nodes and len(row['similars']) > 0:
+            tmp_node = Node("song", source_song_id, source_song_name, source_song_artist, source_song_tags)
+            recommendation_graph.addNode(source_song_id, tmp_node)
+        
+        if source_song_artist not in recommendation_graph.artists:
+            recommendation_graph.artists[source_song_artist] = []
+            recommendation_graph.artists[source_song_artist].append(source_song_id)
+        else:
+            recommendation_graph.artists[source_song_artist].append(source_song_id)
+            if len(recommendation_graph.artists[source_song_artist]) == artist_num_songs_threshold:
+                tmp_node = Node("artist", source_song_artist, "", "", "")
+                recommendation_graph.addNode(source_song_artist, tmp_node)
+                for tid in recommendation_graph.artists[source_song_artist]:
+                    recommendation_graph.addEdge(source_song_id, source_song_artist, 1.0)
+                    recommendation_graph.addEdge(source_song_artist, source_song_id, 1.0)
+            elif len(recommendation_graph.artists[source_song_artist]) > artist_num_songs_threshold:
                 recommendation_graph.addEdge(source_song_id, source_song_artist, 1.0)
                 recommendation_graph.addEdge(source_song_artist, source_song_id, 1.0)
-        elif len(recommendation_graph.artists[source_song_artist]) > artist_num_songs_threshold:
-            recommendation_graph.addEdge(source_song_id, source_song_artist, 1.0)
-            recommendation_graph.addEdge(source_song_artist, source_song_id, 1.0)
-    
-    similar_songs = row['similars']
-    similar_songs = similar_songs.replace('[','')
-    similar_songs = similar_songs.replace("'", '')
-    similar_songs = similar_songs.replace(" ", '').split('],')
-    
-    for song in similar_songs:
-        song = song.replace(']', '')
-        splitted_song = song.split(',')
-        if len(splitted_song) != 2:
-            continue
-        target_id = str(splitted_song[0].strip())
-        similarity_index = splitted_song[1]
-        if target_id not in recommendation_graph.nodes:
-            target_name = "Null"
-            target_artist = "Null"
-            target_tags = None
-            if target_id in song_info['track_id'].values:
-                target_name = str(song_info.loc[song_info['track_id'] == target_id]['title'].values[0])
-                target_artist = str(song_info.loc[song_info['track_id'] == target_id]['artist'].values[0])
-                target_tags = song_info.loc[song_info['track_id'] == target_id]['tags'].values[0]
-            else:
+        
+        similar_songs = row['similars']
+        similar_songs = similar_songs.replace('[','')
+        similar_songs = similar_songs.replace("'", '')
+        similar_songs = similar_songs.replace(" ", '').split('],')
+        
+        for song in similar_songs:
+            song = song.replace(']', '')
+            splitted_song = song.split(',')
+            if len(splitted_song) != 2:
                 continue
-            tmp_node = Node("song", target_id, target_name, target_artist, target_tags)
-            recommendation_graph.addNode(target_id, tmp_node)
+            target_id = str(splitted_song[0].strip())
+            similarity_index = splitted_song[1]
+            if target_id not in recommendation_graph.nodes:
+                target_name = "Null"
+                target_artist = "Null"
+                target_tags = None
+                if target_id in song_info['track_id'].values:
+                    target_name = str(song_info.loc[song_info['track_id'] == target_id]['title'].values[0])
+                    target_artist = str(song_info.loc[song_info['track_id'] == target_id]['artist'].values[0])
+                    target_tags = song_info.loc[song_info['track_id'] == target_id]['tags'].values[0]
+                else:
+                    continue
+                tmp_node = Node("song", target_id, target_name, target_artist, target_tags)
+                recommendation_graph.addNode(target_id, tmp_node)
+                
+            #print(target_id)
+            #print(target_name)
+            #print(target_artist)
+            #print(target_tags)
             
-        #print(target_id)
-        #print(target_name)
-        #print(target_artist)
-        #print(target_tags)
+            recommendation_graph.addEdge(source_song_id, target_id, float(similarity_index))
+            
+            if target_artist not in recommendation_graph.artists and (not target_name == "Null"):
+                recommendation_graph.artists[target_artist] = []
+                recommendation_graph.artists[target_artist].append(target_id)
+            elif target_artist in recommendation_graph.artists:
+                recommendation_graph.artists[target_artist].append(target_id)
+                if len(recommendation_graph.artists[target_artist]) == artist_num_songs_threshold:
+                    tmp_node = Node("artist", target_artist, "", "", "")
+                    recommendation_graph.addNode(target_artist, tmp_node)
+                    for tid in recommendation_graph.artists[target_artist]:
+                        recommendation_graph.addEdge(tid, target_artist, 1.0)
+                        recommendation_graph.addEdge(target_artist, tid, 1.0)
+                elif len(recommendation_graph.artists[target_artist]) > artist_num_songs_threshold:
+                    recommendation_graph.addEdge(target_id, target_artist, 1.0)
+                    recommendation_graph.addEdge(target_artist, target_id, 1.0)
         
-        recommendation_graph.addEdge(source_song_id, target_id, float(similarity_index))
-        
-        if target_artist not in recommendation_graph.artists and (not target_name == "Null"):
-            recommendation_graph.artists[target_artist] = []
-            recommendation_graph.artists[target_artist].append(target_id)
-        elif target_artist in recommendation_graph.artists:
-            recommendation_graph.artists[target_artist].append(target_id)
-            if len(recommendation_graph.artists[target_artist]) == artist_num_songs_threshold:
-                tmp_node = Node("artist", target_artist, "", "", "")
-                recommendation_graph.addNode(target_artist, tmp_node)
-                for tid in recommendation_graph.artists[target_artist]:
-                    recommendation_graph.addEdge(tid, target_artist, 1.0)
-                    recommendation_graph.addEdge(target_artist, tid, 1.0)
-            elif len(recommendation_graph.artists[target_artist]) > artist_num_songs_threshold:
-                recommendation_graph.addEdge(target_id, target_artist, 1.0)
-                recommendation_graph.addEdge(target_artist, target_id, 1.0)
-    
-    if len(recommendation_graph.nodes) >= numNodes:
-        break
+        if len(recommendation_graph.nodes) >= numNodes:
+            break
+
+    return recommendation_graph.random_walk_similarity(random.choice(list(d.values())), num_steps, num_recommendations)
+}
             
 #print(len(recommendation_graph.nodes))
 #print(len(recommendation_graph.edges))
