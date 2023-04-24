@@ -118,7 +118,7 @@ class Node:
         self.artist = song_artist
         self.tags = song_tags
 
-def recommend(num_steps=1, num_recommendations=5) {
+def recommend(num_steps=1, num_recommendations=5):
 
     recommendation_graph = RecommendationGraph()
     song_info = pd.read_csv("../public/subgraph.csv")
