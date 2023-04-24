@@ -216,21 +216,21 @@ for index, row in song_info.iterrows():
     #print("-----------------------------------------")
 #recommendation_graph.random_walk_similarity('TRAAAED128E0783FAB', 3, 5)
 
-header = ['source', 'attribute', 's_artist', 'target', 't_artist', 'value', 's_tags', 't_tags']
+#header = ['source', 'attribute', 's_artist', 'target', 't_artist', 'value', 's_tags', 't_tags']
 
-f = open('subgraph.csv', 'w', encoding = 'utf-8', newline = '')
-writer = csv.writer(f)
-writer.writerow(header)
-for edge in recommendation_graph.edges:
-    source = recommendation_graph.nodes[edge[0]].name
-    attribute = recommendation_graph.nodes[edge[0]].attribute
-    s_artist = recommendation_graph.nodes[edge[0]].artist
-    target = recommendation_graph.nodes[edge[1]].name
-    t_artist = recommendation_graph.nodes[edge[1]].artist
-    value = edge[2]
-    s_tags = recommendation_graph.nodes[edge[0]].tags
-    t_tags = recommendation_graph.nodes[edge[1]].tags
-    row = [source, attribute, s_artist, target, t_artist, value, s_tags, t_tags]
-    writer.writerow(row)
-    f.flush()
-f.close()
+#f = open('subgraph.csv', 'w', encoding = 'utf-8', newline = '')
+#writer = csv.writer(f)
+#writer.writerow(header)
+#for edge in recommendation_graph.edges:
+    #source = recommendation_graph.nodes[edge[0]].name
+    #attribute = recommendation_graph.nodes[edge[0]].attribute
+    #s_artist = recommendation_graph.nodes[edge[0]].artist
+    #target = recommendation_graph.nodes[edge[1]].name
+    #t_artist = recommendation_graph.nodes[edge[1]].artist
+    #value = edge[2]
+    #s_tags = recommendation_graph.nodes[edge[0]].tags
+    #t_tags = recommendation_graph.nodes[edge[1]].tags
+    #row = [source, attribute, s_artist, target, t_artist, value, s_tags, t_tags]
+    #writer.writerow(row)
+    #f.flush()
+#f.close()
