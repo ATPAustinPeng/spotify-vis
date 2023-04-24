@@ -17,7 +17,8 @@ export function Graph(props: any) {
       t_artist: d.t_artist,
       s_tags: d.s_tags,
       t_tags: d.t_tags,
-      attribute: d.attribute
+      s_attribute: d.s_attribute,
+      t_attribute: d.t_attribute
     }
   }).then(function(data) {
   
@@ -91,7 +92,7 @@ export function Graph(props: any) {
       let tags = "";
       let sim_score;
       for (const item of data) {
-        if (item.attribute == "song" && item["source"]["name"] == d.name) {
+        if (item.s_attribute == "song" && item["source"]["name"] == d.name) {
           artist = item["s_artist"];
           let tags_list = JSON.parse(item["s_tags"].replace(/'/g, '"'));
           tags = tags_list.map((x) => {
@@ -99,7 +100,7 @@ export function Graph(props: any) {
           }).toString();
           sim_score = item["value"];
         }
-        if (item.attribute == "song" && item["target"]["name"] == d.name) {
+        if (item.s_attribute == "song" && item["target"]["name"] == d.name) {
           artist = item["t_artist"];
           let tags_list = JSON.parse(item["s_tags"].replace(/'/g, '"'));
           tags = tags_list.map((x) => {
@@ -108,7 +109,7 @@ export function Graph(props: any) {
           sim_score = item["value"];
         }
       }
-      let display = artist ? `
+      let display = artist != "N/A" ? `
         Name: ${d.name}<br>
         Artist: ${artist}<br>
         Tags: ${tags}<br>
@@ -139,8 +140,7 @@ export function Graph(props: any) {
        return minRadius + (d.weight * 2);}) //c1) 
       .style("fill", (d: any) => {
         for (const item of links) {
-          console.log(item.source, d.name, item.s_artist)
-          if (item.source["name"] == d.name && item.s_artist == "") {
+          if (item.source["name"] == d.name && item.s_attribute == "artist") {
             return red_fill;
           }
         }
