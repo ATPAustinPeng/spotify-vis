@@ -29,8 +29,8 @@ export default function Sidebar(props: any) {
                             <div id="recs2" className="invisible">1. Dirty Little Thing<br></br>
                             2. Hate Love<br></br>
                             3. Survive<br></br>
-                            4. In God's Eyes<br></br>
-                            5. It's Over<br></br>
+                            4. In God&apos;s Eyes<br></br>
+                            5. It&apos;s Over<br></br>
                             </div>
                         </div>
                 </div>
