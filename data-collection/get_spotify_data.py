@@ -53,7 +53,7 @@ def save_song_id_and_artist_id(sp, filepath, ids_save_path, start_from=0):
 
                 try:
                     search_results = sp.search(q=q, limit=50, offset=offset, type='track')
-                    time.sleep(0.30) # time buffer to avoid rate limit
+                    time.sleep(0.5) # time buffer to avoid rate limit
                 except spotipy.SpotifyException as e:
                     print("ERROR: ", e)
                     print("EXCEPTION OCCURRED: writing %s, %s, %s, %s" % (sn, sid, an, aid))
@@ -224,8 +224,8 @@ if __name__ == "__main__":
 #     # print("collecting song and artist ids...")
 #     # save_song_id_and_artist_id(client_id, client_secret, datapath + "spotify_api_ids.csv", 0) 
 #     # count_lines_in_file(datapath + "spotify_api_ids2.csv")
-    split_num = 2
-    save_song_id_and_artist_id(sp, datapath + f"lastfm_train_test_comb-{split_num}.csv", datapath + f"lastfm_train_test_comb-{split_num}_spotify_ids.csv", 0)
+    split_num = 5
+    # save_song_id_and_artist_id(sp, datapath + f"lastfm_train_test_comb-{split_num}.csv", datapath + f"lastfm_train_test_comb-{split_num}_spotify_ids.csv", 0)
 
     # print("saving song feature info...")
     # filename = "spotify_api_song_features_data_unclean.csv"
