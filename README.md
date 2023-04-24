@@ -2,9 +2,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, clone the repo.
+
+Then, run the development server:
 
 ```bash
+cd spotify-vis
+npm install
 npm run dev
 # or
 yarn dev
