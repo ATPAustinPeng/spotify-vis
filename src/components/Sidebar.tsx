@@ -4,11 +4,10 @@ export default function Sidebar(props: any) {
     let text = useState("asda");
 
     const handleOnClick = (e) => {
-        text[1]("example\nexample\nexample\nexample\nexample\nexample\n");
-    };
-
-    const generateEdgeList = () => {
-        
+        var div = document.getElementById("recs");
+        div.style.visibility = "hidden";
+        var div2 = document.getElementById("recs2");
+        div2.style.visibility = "visible";
     };
 
     return (
@@ -25,8 +24,14 @@ export default function Sidebar(props: any) {
                         <div className="border border-white-200 rounded-lg px-3 py-2  cursor-pointer hover:bg-gray-700 hover:text-gray-200 w-full text-center" onClick={handleOnClick}>
                             Click to generate
                         </div>
-                        <div className="border border-white-200 rounded-lg px-3 py-2 w-full h-full text-center flex-1" onClick={handleOnClick}>
-                            Reccommendations will show here!
+                        <div className="border border-white-200 rounded-lg px-3 py-2 w-full h-full text-center flex-1">
+                            <div id="recs" className="visible">Reccommendations will show here!</div>
+                            <div id="recs2" className="invisible">1. Dirty Little Thing<br></br>
+                            2. Hate Love<br></br>
+                            3. Survive<br></br>
+                            4. In God's Eyes<br></br>
+                            5. It's Over<br></br>
+                            </div>
                         </div>
                 </div>
                 <div id="tooltip" className="row-span-1">

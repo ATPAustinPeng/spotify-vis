@@ -180,6 +180,7 @@ export function Graph(props: any) {
             d.fy = validate_height(d.y);
           }
         });
+
     };
   
     function dragstarted(d: any) {
