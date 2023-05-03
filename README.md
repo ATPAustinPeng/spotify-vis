@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+In this project, we merge the Last.fm and Spotify datasets and use a random-walk on a Hypergraph to create a Graph-based Music Recommendation system, which we then visualize with Java's D3 library. For more information on the Hypergraph and random walk algorithm, please see the report.
+
 ## Getting Started
 
 First, clone the repo.
